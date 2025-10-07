@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/sidebar";
 import { ReactNode } from "react";
 
-export default function Navbar({ children }: { children: ReactNode }) {
+export default function Navbar() {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -42,7 +42,6 @@ export default function Navbar({ children }: { children: ReactNode }) {
             </Breadcrumb>
           </div>
         </header>
-        <section>{children}</section>
       </SidebarInset>
     </SidebarProvider>
   );

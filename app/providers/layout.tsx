@@ -1,19 +1,25 @@
-import React, { ReactNode } from "react";
-import { ThemeProvider } from "./theme-provider";
-import Navbar from "@/components/navbar/layout";
+// app/(protected)/layout.tsx
+import { ReactNode } from "react";
+import { ThemeProvider } from "@/app/providers/theme-provider";
 import { Toaster } from "sonner";
 
-const MainRootLayout = ({ children }: { children: ReactNode }) => {
+export default async function MainRootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange>
-      <Navbar>{children}</Navbar>
-      <Toaster />
-    </ThemeProvider>
+    <html lang="en">
+      <body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange>
+          {children}
+          <Toaster />
+        </ThemeProvider>
+      </body>
+    </html>
   );
-};
-
-export default MainRootLayout;
+}

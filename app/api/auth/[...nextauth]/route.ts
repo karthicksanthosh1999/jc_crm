@@ -49,7 +49,10 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.role = token.role;
+        session.user.role = token.role as
+          | "SUPER_ADMIN"
+          | "ADMIN"
+          | "SALES_MANAGER";
       }
       return session;
     },
