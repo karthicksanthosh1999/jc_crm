@@ -23,8 +23,12 @@ export function SignupForm({
           </p>
         </div>
         <Field>
-          <FieldLabel htmlFor="name">Full Name</FieldLabel>
-          <Input id="name" type="text" placeholder="John Doe" required />
+          <FieldLabel htmlFor="name">First Name</FieldLabel>
+          <Input id="name" type="text" placeholder="John" required />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="name">Last Name</FieldLabel>
+          <Input id="name" type="text" placeholder="Doe" required />
         </Field>
         <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -61,7 +65,7 @@ export function SignupForm({
             Sign up with GitHub
           </Button>
           <FieldDescription className="px-6 text-center">
-            Already have an account? <a href="#">Sign in</a>
+            Already have an account? <a href="/login">Sign in</a>
           </FieldDescription>
         </Field>
       </FieldGroup>

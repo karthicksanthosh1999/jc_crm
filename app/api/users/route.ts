@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { userValidationSchema } from "@/schema/user-schema";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
 export async function POST(req: Request) {
   try {
@@ -43,6 +45,27 @@ export async function POST(req: Request) {
       message: "User created successfully",
       success: true,
       user,
+    });
+  } catch (error) {
+    return NextResponse.json({
+      success: false,
+      error: (error as Error).message,
+    });
+  }
+}
+
+export async function GET(_req: Request) {
+  try {
+    const user = await getServerSession();
+    if (!user) {
+      redirect("/login");
+    }
+
+    const users = await prisma.user.findMany();
+    return NextResponse.json({
+      message: "User get successfully",
+      success: true,
+      users,
     });
   } catch (error) {
     return NextResponse.json({

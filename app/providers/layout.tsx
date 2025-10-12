@@ -1,25 +1,26 @@
-// app/(protected)/layout.tsx
+"use client";
+
 import { ReactNode } from "react";
 import { ThemeProvider } from "@/app/providers/theme-provider";
 import { Toaster } from "sonner";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { SessionProvider } from "next-auth/react";
 
-export default async function MainRootLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function MainRootLayout({ children }: { children: ReactNode }) {
+  const queryClient = new QueryClient();
+
   return (
-    <html lang="en">
-      <body>
+    <SessionProvider>
+      <QueryClientProvider client={queryClient}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange>
           {children}
-          <Toaster />
+          <Toaster position="bottom-right" />
         </ThemeProvider>
-      </body>
-    </html>
+      </QueryClientProvider>
+    </SessionProvider>
   );
 }

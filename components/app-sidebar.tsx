@@ -25,6 +25,20 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { useSession } from "next-auth/react";
+
+const navItems = {
+  superAdmin: [
+    { title: "Dashboard", url: "/dashboard", icon: SquareTerminal },
+    { title: "Users", url: "/users", icon: Bot },
+    { title: "Settings", url: "/settings", icon: Settings2 },
+  ],
+  admin: [
+    { title: "Leads", url: "/leads", icon: SquareTerminal },
+    { title: "Projects", url: "/projects", icon: Frame },
+  ],
+  manager: [{ title: "Reports", url: "/reports", icon: PieChart }],
+};
 
 // This is sample data.
 const data = {
@@ -157,17 +171,29 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: session } = useSession();
+  console.log(session?.user);
+
+  // Default to an empty menu if role not found
+  const role = session?.user?.role;
+  const items = navItems[role] || [];
+
+  const user = {
+    name: session?.user?.name,
+    email: session?.user?.email,
+    avatar: "/avatars/default.jpg",
+  };
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
+      {/* <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
-      </SidebarHeader>
+      </SidebarHeader> */}
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={items} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
