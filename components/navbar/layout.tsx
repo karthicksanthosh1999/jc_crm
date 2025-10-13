@@ -1,48 +1,140 @@
-import { AppSidebar } from "@/components/app-sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { ReactNode } from "react";
+"use client";
+import React, { useState } from "react";
+import Logo, { LogoMobile } from "../Logo";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { signOut } from "next-auth/react";
+import ThemeSwitcherBtn from "../ThemeSwitcherBtn";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
 
-export default function Navbar() {
+const Navbar = () => {
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator
-              orientation="vertical"
-              className="mr-2 data-[orientation=vertical]:h-4"
-            />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+    <>
+      <DesktopNavbar />
+      <MobileNavbar />
+    </>
+  );
+};
+
+const items = [
+  {
+    label: "Dashboard",
+    link: "/",
+  },
+  {
+    label: "Transactions",
+    link: "/transactions",
+  },
+  {
+    label: "Manage",
+    link: "/manage",
+  },
+  {
+    label: "About",
+    link: "/about",
+  },
+];
+
+function DesktopNavbar() {
+  return (
+    <div className="hidden border-separate border-b bg-background md:block">
+      <nav className="container flex items-center justify-between px-8">
+        <div className="flex h-[80px] min=h-[60px] items-center gap-x-4">
+          <Logo />
+          <div className="flex h-full">
+            {items &&
+              items.map((item) => (
+                <NavbarItem
+                  key={item.label}
+                  link={item.link}
+                  label={item.label}
+                />
+              ))}
           </div>
-        </header>
-      </SidebarInset>
-    </SidebarProvider>
+        </div>
+        <div className="flex items-center gap-2">
+          <ThemeSwitcherBtn />
+          <Button onClick={() => signOut()} variant={"ghost"}>
+            Logout
+          </Button>
+        </div>
+      </nav>
+    </div>
   );
 }
+
+function MobileNavbar() {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  return (
+    <div className="block border-separate bg-background md:hidden">
+      <div className="container flex items-center justify-between px-8">
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <Button variant={"ghost"} size={"icon"}>
+              <Menu />
+            </Button>
+          </SheetTrigger>
+          <SheetContent className="w-[280px] sm:w-[540px]" side="left">
+            <LogoMobile />
+            <div className="flex flex-col gap-1 pt-4">
+              {items.map((item) => (
+                <NavbarItem
+                  clickCallBack={() => setIsOpen((prev) => !prev)}
+                  key={item.label}
+                  label={item.label}
+                  link={item.link}
+                />
+              ))}
+            </div>
+          </SheetContent>
+        </Sheet>
+        <div className="flex h-[80px] min-h-[60px] items-center gap-x-4">
+          <LogoMobile />
+        </div>
+        <div className="flex items-center gap-2">
+          <ThemeSwitcherBtn />
+          <Button onClick={() => signOut()} variant={"ghost"}>
+            Logout
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NavbarItem({
+  link,
+  label,
+  clickCallBack,
+}: {
+  link: string;
+  label: string;
+  clickCallBack?: () => void;
+}) {
+  const pathName = usePathname();
+  const isActive = pathName === link;
+  return (
+    <div className="relative flex items-center">
+      <Link
+        href={link}
+        className={cn(
+          buttonVariants({ variant: "ghost" }),
+          "w-full justify-start text-lg text-muted-foreground hover:text-foreground",
+          isActive && "text-foreground"
+        )}
+        onClick={() => {
+          if (clickCallBack) clickCallBack;
+        }}>
+        {label}
+      </Link>
+      {isActive && (
+        <div className="absolute -bottom-[2px] left-1/2 hidden h-[2px] w-[80%] -translate-1/2 rounded-xl bg-foreground md:block" />
+      )}
+    </div>
+  );
+}
+
+export default Navbar;

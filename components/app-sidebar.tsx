@@ -28,16 +28,16 @@ import {
 import { useSession } from "next-auth/react";
 
 const navItems = {
-  superAdmin: [
-    { title: "Dashboard", url: "/dashboard", icon: SquareTerminal },
+  SUPER_ADMIN: [
     { title: "Users", url: "/users", icon: Bot },
+    { title: "Leads", url: "/leads", icon: Bot },
     { title: "Settings", url: "/settings", icon: Settings2 },
   ],
-  admin: [
+  ADMIN: [
     { title: "Leads", url: "/leads", icon: SquareTerminal },
     { title: "Projects", url: "/projects", icon: Frame },
   ],
-  manager: [{ title: "Reports", url: "/reports", icon: PieChart }],
+  MANAGER: [{ title: "Reports", url: "/reports", icon: PieChart }],
 };
 
 // This is sample data.
@@ -64,7 +64,7 @@ const data = {
       plan: "Free",
     },
   ],
-  navMain: [
+  SUPER_ADMIN: [
     {
       title: "Leads",
       url: "#",
@@ -172,11 +172,10 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession();
-  console.log(session?.user);
 
   // Default to an empty menu if role not found
   const role = session?.user?.role;
-  const items = navItems[role] || [];
+  const items = data[role] || [];
 
   const user = {
     name: session?.user?.name,

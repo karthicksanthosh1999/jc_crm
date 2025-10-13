@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { userValidationSchema } from "@/schema/user-schema";
+import {
+  UserSearchValidationSchema,
+  userValidationSchema,
+} from "@/schema/user-schema";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
@@ -54,14 +57,56 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET(_req: Request) {
+export async function GET(request: Request) {
   try {
     const user = await getServerSession();
     if (!user) {
-      redirect("/login");
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
-    const users = await prisma.user.findMany();
+    const { searchParams } = new URL(request.url);
+
+    const queryParams = UserSearchValidationSchema.safeParse({
+      search: searchParams.get("search") || "",
+      userType: searchParams.get("userType") || "",
+      from: searchParams.get("from"),
+      to: searchParams.get("to"),
+    });
+
+    if (!queryParams.success) {
+      return Response.json(queryParams.error.message, {
+        status: 400,
+      });
+    }
+    const { from, to, search, userType } = queryParams.data;
+
+    const filter: any = { AND: [] };
+
+    if (userType) filter.AND.push({ userType });
+    if (search) {
+      filter.AND.push({
+        OR: [
+          { email: { contains: search, mode: "insensitive" } },
+          { mobile: { contains: search, mode: "insensitive" } },
+        ],
+      });
+    }
+    if (from && to) {
+      filter.AND.push({
+        createdAt: {
+          gte: from,
+          lte: to,
+        },
+      });
+    }
+
+    const users = await prisma.user.findMany({
+      where: filter.AND.length ? filter : undefined,
+    });
+
     return NextResponse.json({
       message: "User get successfully",
       success: true,

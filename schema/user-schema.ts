@@ -1,3 +1,5 @@
+import { MAX_DATE_RANGE_DAYS } from "@/lib/constand";
+import { differenceInDays } from "date-fns";
 import { z } from "zod";
 
 export const userValidationSchema = z.object({
@@ -21,3 +23,27 @@ export const userLoginValidationSchema = z.object({
 export type UserLoginValidationSchemaType = z.infer<
   typeof userLoginValidationSchema
 >;
+
+// SEARCH INPUT VALIDATION SCHEMA
+export const UserSearchValidationSchema = z
+  .object({
+    from: z.coerce.date(),
+    to: z.coerce.date(),
+    userType: z.coerce.string().optional(),
+    search: z.coerce.string().optional(),
+  })
+  .refine(
+    (args) => {
+      const { from, to } = args;
+      if (from && to) {
+        const days = differenceInDays(to, from);
+        const isValidRange = days >= 0 && days <= MAX_DATE_RANGE_DAYS;
+        return isValidRange;
+      }
+      return true;
+    },
+    {
+      error:
+        "`Invalid date range. The range must be within ${MAX_DATE_RANGE_DAYS} days.`,",
+    }
+  );

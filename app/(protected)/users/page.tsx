@@ -21,6 +21,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -35,6 +36,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import axios from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const page = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -43,13 +46,32 @@ const page = () => {
     setIsOpen((preV) => !preV);
   };
 
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationFn: (values: UserValidationSchemaType) =>
+      axios.post("/api/users", values),
+    onSuccess: async () => {
+      toast.success("User created successfully", {
+        id: "create-user",
+      });
+      form.reset();
+      queryClient.invalidateQueries({ queryKey: ["create_user"] });
+    },
+    onError: (error) => {
+      toast.error("Failed to create user", { id: "create-user" });
+      console.error(error);
+    },
+  });
+
   const form = useForm<UserValidationSchemaType>({
     resolver: zodResolver(userValidationSchema),
   });
 
   const onSubmit = (values: UserValidationSchemaType) => {
-    console.log(values);
-    toast.success("User created successfully");
+    toast.loading("User creating", {
+      id: "create-user",
+    });
+    mutate(values);
   };
 
   return (
@@ -77,7 +99,11 @@ const page = () => {
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter full name" {...field} />
+                      <Input
+                        type="text"
+                        placeholder="Enter full name"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -91,7 +117,43 @@ const page = () => {
                   <FormItem>
                     <FormLabel>Last Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter Last name" {...field} />
+                      <Input
+                        type="text"
+                        placeholder="Enter Last name"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Mobile */}
+              <FormField
+                control={form.control}
+                name="mobile"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Mobile No</FormLabel>
+                    <FormControl>
+                      <Input type="tel" placeholder="Enter Mobile" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Last Name */}
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="Enter Location"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -165,16 +227,18 @@ const page = () => {
                   </FormItem>
                 )}
               />
+              <DrawerFooter>
+                <Button type="submit" variant={"default"}>
+                  Submit
+                </Button>
+                <DrawerClose>
+                  <Button variant="outline" className="w-full">
+                    Cancel
+                  </Button>
+                </DrawerClose>
+              </DrawerFooter>
             </form>
           </Form>
-          <DrawerFooter>
-            <Button variant={"default"}>Submit</Button>
-            <DrawerClose>
-              <Button variant="outline" className="w-full">
-                Cancel
-              </Button>
-            </DrawerClose>
-          </DrawerFooter>
         </DrawerContent>
       </Drawer>
     </div>
