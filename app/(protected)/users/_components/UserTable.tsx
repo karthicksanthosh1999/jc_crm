@@ -15,7 +15,16 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
-import { ColumnDef, useReactTable } from "@tanstack/react-table";
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
 import axios from "axios";
 import { MoreHorizontalIcon, TrashIcon } from "lucide-react";
 import React, { useState } from "react";
@@ -121,15 +130,18 @@ const columns: ColumnDef<TUser>[] = [
   },
   {
     id: "actions",
-    embleHiding: true,
-    cell: ({ row }) => <RowAction />,
+    enableHiding: false,
+    cell: ({ row }) => <RowAction users={row.original} />,
   },
 ];
 
 const UserTable = ({ from, to, userType, search }: Props) => {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
   // QUERY CALL
-  const userList = useQuery({
-    queryKey: ["user-table"],
+  const { data } = useQuery({
+    queryKey: ["user-table", from, to],
     queryFn: () =>
       axios.get(
         `/api/users?search=${search}&userType=${userType}&from=${from}&to=${to}`
@@ -137,8 +149,18 @@ const UserTable = ({ from, to, userType, search }: Props) => {
   });
 
   const table = useReactTable({
-    data: userList.data || emptyData,
+    data: data || [],
     columns,
+    getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    state: {
+      columnFilters,
+      sorting,
+    },
+    onColumnFiltersChange: setColumnFilters,
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   return (

@@ -21,7 +21,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -38,9 +37,17 @@ import {
 import { toast } from "sonner";
 import axios from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
+import { differenceInDays, startOfMonth } from "date-fns";
+import { MAX_DATE_RANGE_DAYS } from "@/lib/constand";
+import UserTable from "./_components/UserTable";
 
 const page = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
+    from: startOfMonth(new Date()),
+    to: new Date(),
+  });
 
   const handleOpen = () => {
     setIsOpen((preV) => !preV);
@@ -76,13 +83,6 @@ const page = () => {
 
   return (
     <div className="container mx-auto max-w-[1550px]">
-      <div className="flex items-center justify-between px-5">
-        <h4 className="text-3xl font-semibold">User List</h4>
-        <Button variant={"default"} onClick={handleOpen}>
-          Add User
-        </Button>
-      </div>
-
       <Drawer open={isOpen} onOpenChange={handleOpen} direction="right">
         <DrawerContent className="px-5">
           <DrawerHeader>
@@ -90,7 +90,9 @@ const page = () => {
             <DrawerDescription>Create the user</DrawerDescription>
           </DrawerHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-5 overflow-y-auto">
               {/* First Name */}
               <FormField
                 control={form.control}
@@ -231,7 +233,7 @@ const page = () => {
                 <Button type="submit" variant={"default"}>
                   Submit
                 </Button>
-                <DrawerClose>
+                <DrawerClose onClick={() => form.reset()}>
                   <Button variant="outline" className="w-full">
                     Cancel
                   </Button>
@@ -241,6 +243,39 @@ const page = () => {
           </Form>
         </DrawerContent>
       </Drawer>
+      <div className="container mx-auto flex flex-wrap items-center justify-between gap-6 py-3">
+        <div>
+          <p className="text-2xl font-bold">User List</p>
+        </div>
+        <div className="flex gap-2">
+          <DateRangePicker
+            initialDateFrom={dateRange.from}
+            initialDateTo={dateRange.to}
+            showCompare={false}
+            onUpdate={(values) => {
+              const { from, to } = values.range;
+              if (!from || !to) return;
+              if (differenceInDays(to, from) > MAX_DATE_RANGE_DAYS) {
+                toast.error(`The selected date range is too big, Max allowed range is 
+                    ${MAX_DATE_RANGE_DAYS} days!`);
+                return;
+              }
+              setDateRange({ from, to });
+            }}
+          />
+          <Button variant={"default"} onClick={handleOpen}>
+            Add User
+          </Button>
+        </div>
+      </div>
+      <div className="container mx-auto">
+        <UserTable
+          from={dateRange.from}
+          to={dateRange.to}
+          search=""
+          userType="SUPER_ADMIN"
+        />
+      </div>
     </div>
   );
 };
