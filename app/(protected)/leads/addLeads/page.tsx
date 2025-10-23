@@ -23,7 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { LocateIcon, Map, UserCheck2, UserCircle } from "lucide-react";
+import { Map, UserCheck2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DateInput } from "@/components/ui/DateInput";
 
@@ -176,16 +176,102 @@ const page = () => {
                   Address
                 </AccordionTrigger>
                 <AccordionContent className="flex flex-col gap-4 text-balance">
-                  <p>
-                    We offer worldwide shipping through trusted courier
-                    partners. Standard delivery takes 3-5 business days, while
-                    express shipping ensures delivery within 1-2 business days.
-                  </p>
-                  <p>
-                    All orders are carefully packaged and fully insured. Track
-                    your shipment in real-time through our dedicated tracking
-                    portal.
-                  </p>
+                  <div className="flex items-center justify-around w-full">
+                    <FormField
+                      control={form.control}
+                      name="street"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Street</FormLabel>
+                          <FormControl>
+                            <Input
+                              className="w-full"
+                              {...field}
+                              placeholder="Enter street"
+                              type="text"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex items-center justify-around w-full">
+                    <FormField
+                      control={form.control}
+                      name="state"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>State</FormLabel>
+                          <FormControl>
+                            <Input
+                              className="w-lg"
+                              {...field}
+                              placeholder="Enter mobile number"
+                              type="text"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>City</FormLabel>
+                          <FormControl>
+                            <Input
+                              className="w-lg"
+                              {...field}
+                              placeholder="Enter city"
+                              type="text"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex items-center justify-around w-full">
+                    <FormField
+                      control={form.control}
+                      name="country"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Country</FormLabel>
+                          <FormControl>
+                            <Input
+                              className="w-lg"
+                              {...field}
+                              placeholder="Enter country"
+                              type="text"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="pincode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Pincode</FormLabel>
+                          <FormControl>
+                            <Input
+                              className="w-lg"
+                              {...field}
+                              placeholder="Enter pincode"
+                              type="number"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-3">

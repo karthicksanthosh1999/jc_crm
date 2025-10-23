@@ -15,11 +15,11 @@ export const LeadValidationSchema = z.object({
   address: z.string(),
   street: z.string(),
   state: z.string(),
+  city: z.string(),
+  pinCode: z.number(),
   country: z.string(),
   idProof: z.string(),
   assignedToId: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
 });
 
 export type LeadValidationSchemaType = z.infer<typeof LeadValidationSchema>;

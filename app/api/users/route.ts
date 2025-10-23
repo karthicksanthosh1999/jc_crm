@@ -6,7 +6,6 @@ import {
   userValidationSchema,
 } from "@/schema/user-schema";
 import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
 
 export async function POST(req: Request) {
   try {

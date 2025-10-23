@@ -105,13 +105,13 @@ const data = {
       ],
     },
     {
-      title: "Documentation",
+      title: "Courses",
       url: "#",
       icon: BookOpen,
       items: [
         {
-          title: "Introduction",
-          url: "#",
+          title: "Details",
+          url: "/courses",
         },
         {
           title: "Get Started",

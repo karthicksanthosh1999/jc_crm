@@ -24,6 +24,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   Lead      Lead[]
+  Course    Course[]
 }
 
 model Lead {
@@ -43,6 +44,8 @@ model Lead {
   address      String
   street       String
   state        String
+  city         String
+  pinCode      Int
   country      String
   idProof      String
   assignedTo   User?      @relation("SalesManagerLeads", fields: [assignedToId], references: [id])
@@ -53,9 +56,17 @@ model Lead {
 }
 
 model Course {
-  id    String @id @default(uuid())
-  title String
-  Lead  Lead[]
+  id            String @id @default(uuid())
+  userId        String
+  image         String
+  imagePublicId String
+  title         String
+
+  User User   @relation(fields: [userId], references: [id])
+  Lead Lead[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Role {
