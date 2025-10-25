@@ -28,7 +28,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import Image from "next/image";
-import { useCreateCourse } from "../hooks/userHooks";
+import { useCreateCourse } from "../hooks/courseHooks";
+import { useSession } from "next-auth/react";
 
 interface IProps {
   open: boolean;
@@ -37,6 +38,9 @@ interface IProps {
 }
 
 const UserForm = ({ open, setOpen, title }: IProps) => {
+  const { data: session } = useSession();
+  console.log(session);
+
   const [preview, setPreview] = useState<string | null>(null);
 
   const handleClose = () => {
@@ -55,17 +59,29 @@ const UserForm = ({ open, setOpen, title }: IProps) => {
 
   const form = useForm({
     resolver: zodResolver(courseValidationSchema),
+    defaultValues: {
+      userId: "",
+    },
   });
 
+  useEffect(() => {
+    if (session) {
+      form.reset({ userId: session?.user?.id });
+    }
+  }, [form, session, mutate]);
+
   const onSubmit = async (value: courseValidationSchemaType) => {
-    toast.loading("Course creating...🔃", {
-      id: "user-create",
-    });
+    toast.loading("Course creating...🔃", { id: "course" });
+
     const formData = new FormData();
-    formData.append("name", value.title);
+
+    formData.append("userId", value.userId);
+    formData.append("title", value.title);
+
     if (value.image) {
       formData.append("image", value.image);
     }
+
     mutate(formData);
   };
 
@@ -111,12 +127,7 @@ const UserForm = ({ open, setOpen, title }: IProps) => {
                             onBlur={field.onBlur}
                             type="file"
                             accept="image/png, image/jpeg"
-                            className="block w-full text-sm text-slate-500
-                                                                file:mr-4 file:py-2 file:px-4
-                                                                file:rounded-full file:border-0
-                                                                file:text-sm file:font-semibold
-                                                                file:bg-violet-50 file:text-violet-700
-                                                                hover:file:bg-violet-100"
+                            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
                             onChange={(e) => {
                               const file = e.target.files?.[0];
                               if (file) {
@@ -155,7 +166,10 @@ const UserForm = ({ open, setOpen, title }: IProps) => {
               )}
             />
             <AlertDialogFooter>
-              <Button variant={"destructive"} onClick={handleClose}>
+              <Button
+                variant={"destructive"}
+                type="reset"
+                onClick={handleClose}>
                 Cancel
               </Button>
               <Button disabled={isPending} type="submit">

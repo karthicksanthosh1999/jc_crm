@@ -1,15 +1,16 @@
 import { prisma } from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { updateImage } from "@/lib/cloudinaryHelper";
-import { NextURL } from "next/dist/server/web/next-url";
 
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     let title = formData.get("title") as string;
     let image = formData.get("image") as File | null;
+    let userId = formData.get("userId") as string;
 
-    if (!title) {
+    console.log(title, image, userId);
+    if (!title || !userId || !image) {
       return NextResponse.json(
         { message: "Please fille the all fields", success: false },
         { status: 400 }
@@ -22,6 +23,7 @@ export async function POST(request: Request) {
     const course = await prisma.course.create({
       data: {
         title,
+        userId,
         image: userImage?.url || null,
         imagePublicId: userImage?.public_id || null,
       },
@@ -58,21 +60,26 @@ export async function GET(request: Request) {
     const search = searchParams.get("search") || "";
 
     const course = await prisma.course.findMany({
-      where: {},
+      where: {
+        title: { contains: search, mode: "insensitive" },
+      },
     });
     return NextResponse.json(
       {
         message: "Course Filtered Successfully",
         success: true,
-        date: course,
+        data: course,
       },
       { status: 200 }
     );
   } catch (error) {
-    return NextResponse.json({
-      message: "Internal Server Error",
-      success: false,
-      error: error instanceof Error ? error.message : String(error),
-    });
+    return NextResponse.json(
+      {
+        message: "Internal Server Error",
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
   }
 }

@@ -3,13 +3,16 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Edit, TrashIcon } from "lucide-react";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
+import { useDeleteCourse } from "../hooks/courseHooks";
 
 interface IProps {
+  id: string;
   title: string;
   image: StaticImport;
 }
 
-export default function UserCard({ image, title }: IProps) {
+export default function UserCard({ image, title, id }: IProps) {
+  const { mutate } = useDeleteCourse();
   return (
     <div className="w-full p-6 flex justify-center">
       <Card className="w-xs">
@@ -21,7 +24,7 @@ export default function UserCard({ image, title }: IProps) {
                 src={image}
                 width={100}
                 height={100}
-                className="w-full h-full object-center"
+                className="w-full h-full object-center object-cover"
               />
             </div>
           </div>
@@ -36,7 +39,8 @@ export default function UserCard({ image, title }: IProps) {
             <Button
               size="icon"
               variant={"destructive"}
-              className="text-xs px-2 py-1 h-7 cursor-pointer">
+              className="text-xs px-2 py-1 h-7 cursor-pointer"
+              onClick={() => mutate(id)}>
               <TrashIcon />
             </Button>
           </div>

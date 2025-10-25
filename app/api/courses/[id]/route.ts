@@ -46,10 +46,10 @@ export async function DELETE(
 ) {
   try {
     const { id } = params;
-
     const existingCourse = await prisma.course.findUnique({
       where: { id },
     });
+    console.log(existingCourse);
 
     if (!existingCourse) {
       return NextResponse.json(
@@ -65,7 +65,7 @@ export async function DELETE(
       await deleteImage(existingCourse?.imagePublicId);
     }
 
-    await prisma.user.delete({
+    await prisma.course.delete({
       where: { id: existingCourse?.id },
     });
 
@@ -73,7 +73,7 @@ export async function DELETE(
       {
         message: "Course delete successfully",
         success: true,
-        date: existingCourse,
+        data: existingCourse,
       },
       { status: 200 }
     );

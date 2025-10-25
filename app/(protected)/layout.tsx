@@ -3,7 +3,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "../api/auth/[...nextauth]/route";
-import Navbar from "@/components/navbar/layout";
+import { Navbar } from "@/components/navbar/layout";
 
 export default async function ProtectedLayout({
   children,
@@ -22,9 +22,9 @@ export default async function ProtectedLayout({
         <AppSidebar />
 
         {/* Main content */}
-        <main className="flex-1 px-0 sm:p-6 overflow-y-auto w-full">
+        <main className="flex-1 px-0 overflow-y-auto w-full">
           <Navbar />
-          {children}
+          <div className="mt-5">{children}</div>
         </main>
       </div>
     </SidebarProvider>

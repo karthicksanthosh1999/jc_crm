@@ -17,7 +17,6 @@ import {
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
-import { TeamSwitcher } from "@/components/team-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -47,29 +46,31 @@ const data = {
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
   SUPER_ADMIN: [
+    {
+      title: "Dashboards",
+      url: "#",
+      icon: SquareTerminal,
+      isActive: true,
+      items: [
+        {
+          title: "Super Dashboard",
+          url: "/dashboard/super-admin",
+        },
+        {
+          title: "Admin Dashboard",
+          url: "/dashboard/admin",
+        },
+        {
+          title: "Manager Dashboard",
+          url: "/dashboard/sales",
+        },
+      ],
+    },
     {
       title: "Leads",
       url: "#",
       icon: SquareTerminal,
-      isActive: true,
       items: [
         {
           title: "Leads",
