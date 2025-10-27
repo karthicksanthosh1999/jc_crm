@@ -9,7 +9,6 @@ export async function POST(request: Request) {
     let image = formData.get("image") as File | null;
     let userId = formData.get("userId") as string;
 
-    console.log(title, image, userId);
     if (!title || !userId || !image) {
       return NextResponse.json(
         { message: "Please fille the all fields", success: false },

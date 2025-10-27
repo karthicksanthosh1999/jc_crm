@@ -21,38 +21,41 @@ model User {
   location  String
   leads     Lead[]  @relation("SalesManagerLeads")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   Lead      Lead[]
   Course    Course[]
+  Company   Company[]
 }
 
 model Lead {
-  id           String     @id @default(uuid())
-  userId       String
-  image        String
-  name         String
-  email        String
-  dob          String
-  doj          DateTime
-  doe          DateTime
-  phone        String
-  company      String
-  status       LeadStatus @default(NEW)
-  courseId     String
-  course       Course     @relation(fields: [courseId], references: [id])
-  address      String
-  street       String
-  state        String
-  city         String
-  pinCode      Int
-  country      String
-  idProof      String
-  assignedTo   User?      @relation("SalesManagerLeads", fields: [assignedToId], references: [id])
-  assignedToId String?
-  createdUser  User       @relation(fields: [userId], references: [id])
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id              String     @id @default(uuid())
+  userId          String
+  image           String?
+  imagePublicId   String?
+  name            String
+  email           String
+  dob             DateTime?
+  doj             DateTime?
+  doe             DateTime?
+  phone           String
+  company         String
+  status          LeadStatus @default(NEW)
+  courseId        String
+  street          String?
+  state           String?
+  city            String?
+  pinCode         Int?
+  country         String?
+  idProof         String?
+  idProofPublicId String?
+  assignedToId    String?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  createdUser User   @relation(fields: [userId], references: [id])
+  assignedTo  User?  @relation("SalesManagerLeads", fields: [assignedToId], references: [id])
+  course      Course @relation(fields: [courseId], references: [id])
 }
 
 model Course {
@@ -69,14 +72,28 @@ model Course {
   updatedAt DateTime @updatedAt
 }
 
+model Company {
+  id          String @id @default(uuid())
+  companyName String
+  logo        String
+  userId      String
+  owner       User   @relation(fields: [userId], references: [id])
+}
+
 enum Role {
   SUPER_ADMIN
   ADMIN
   SALES_MANAGER
+  BED
+  ACCOUNT
+  TECH
+  QC
+  PLACEMENT
 }
 
 enum LeadStatus {
   NEW
+  CONVERTED
   CONTACTED
   FOLLOW_UP
   ENROLLED

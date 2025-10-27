@@ -22,7 +22,7 @@ const page = () => {
   return (
     <div className="container mx-auto max-w-[1440px] px-5">
       <div className=" flex items-center justify-between">
-        <h1>User section</h1>
+        <h1>Course section</h1>
         <div className="flex gap-2 items-center">
           <Input
             value={inputValue}
@@ -35,7 +35,7 @@ const page = () => {
             variant={"default"}
             className="cursor-pointer"
             onClick={() => setUserFormOpen(true)}>
-            Add User
+            Add Course
           </Button>
         </div>
       </div>

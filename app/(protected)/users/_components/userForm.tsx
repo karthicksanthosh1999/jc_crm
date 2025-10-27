@@ -92,7 +92,9 @@ const UserForm = ({ open, setOpen, title }: IProps) => {
             <X onClick={handleClose} />
           </AlertDialogTitle>
           <Separator />
-          <AlertDialogDescription>Create the Course</AlertDialogDescription>
+          <AlertDialogDescription>
+            Create the user profile here
+          </AlertDialogDescription>
         </AlertDialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">

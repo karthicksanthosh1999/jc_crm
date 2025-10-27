@@ -134,12 +134,12 @@ const data = {
       icon: Settings2,
       items: [
         {
-          title: "General",
+          title: "Profile",
           url: "#",
         },
         {
-          title: "Team",
-          url: "#",
+          title: "Company",
+          url: "/company",
         },
         {
           title: "Billing",

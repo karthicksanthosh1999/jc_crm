@@ -215,11 +215,16 @@ const page = () => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="SUPER_ADMIN">
-                            Super Admin
+                            SUPER ADMIN
                           </SelectItem>
-                          <SelectItem value="ADMIN">Admin</SelectItem>
+                          <SelectItem value="ADMIN">ADMIN</SelectItem>
+                          <SelectItem value="BDE"> BED</SelectItem>
+                          <SelectItem value="ACCOUNT">ACCOUNT</SelectItem>
+                          <SelectItem value="QC">QC</SelectItem>
+                          <SelectItem value="PLACEMENT">PLACEMENT</SelectItem>
+                          <SelectItem value="TECH">TECH </SelectItem>
                           <SelectItem value="SALES_MANAGER">
-                            Sales Manager
+                            SALES_MANAGER
                           </SelectItem>
                         </SelectContent>
                       </Select>

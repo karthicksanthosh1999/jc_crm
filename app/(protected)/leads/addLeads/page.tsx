@@ -1,14 +1,7 @@
 "use client";
-import React from "react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSession } from "next-auth/react";
 import {
   LeadValidationSchema,
   LeadValidationSchemaType,
@@ -26,16 +19,26 @@ import { Input } from "@/components/ui/input";
 import { Map, UserCheck2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DateInput } from "@/components/ui/DateInput";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const page = () => {
-  const { data: session } = useSession();
-
   const form = useForm<LeadValidationSchemaType>({
-    resolver: zodResolver(LeadValidationSchema),
-    defaultValues: {
-      userId: session?.user.id,
-    },
+    resolver: zodResolver(LeadValidationSchema) as any,
   });
+
+  const [preview, setPreview] = useState("");
+
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
 
   const onSubmit = (values: LeadValidationSchemaType) => {
     toast.loading("Lead Creating...", {
@@ -45,21 +48,55 @@ const page = () => {
 
   return (
     <>
-      <div className="container mx-auto flex flex-wrap items-center justify-between gap-6 py-3">
-        <Accordion
-          type="single"
-          collapsible
-          className="w-full"
-          defaultValue="item-1">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <AccordionItem value="item-1">
-                <AccordionTrigger className="text-lg font-bold flex items-center justify-start">
-                  <UserCheck2 />
-                  Basic Info
-                </AccordionTrigger>
-                <AccordionContent className="flex flex-col gap-4 text-balance">
-                  <div className="flex items-center justify-around w-full">
+      <div className="container mx-auto max-w-[1440px]">
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <Card className="w-full">
+            <CardHeader className="container mx-auto">
+              <CardTitle className="flex gap-3 items-center">
+                {" "}
+                <UserCheck2 /> Basic Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="w-full">
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onsubmit)}
+                  className="space-y-5">
+                  <div>
+                    <FormField
+                      control={form.control}
+                      name="image"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <div className="flex flex-col gap-3">
+                              <input
+                                name={field.name}
+                                ref={field.ref}
+                                onBlur={field.onBlur}
+                                type="file"
+                                accept="image/png, image/jpeg"
+                                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    const imageUrl = URL.createObjectURL(file);
+                                    setPreview(imageUrl);
+                                    field.onChange(file);
+                                  } else {
+                                    field.onChange(null);
+                                    setPreview(null);
+                                  }
+                                }}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 justify-around">
                     <FormField
                       control={form.control}
                       name="name"
@@ -71,6 +108,44 @@ const page = () => {
                               className="w-lg"
                               {...field}
                               placeholder="Enter full name"
+                              type="text"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input
+                              className="w-lg"
+                              {...field}
+                              placeholder="Enter email"
+                              type="text"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 justify-around">
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone</FormLabel>
+                          <FormControl>
+                            <Input
+                              className="w-lg"
+                              {...field}
+                              placeholder="Enter phone"
                               type="text"
                             />
                           </FormControl>
@@ -97,19 +172,20 @@ const page = () => {
                       )}
                     />
                   </div>
-                  <div className="flex items-center justify-around w-full">
+                  <div className="flex items-center gap-2 justify-around">
                     <FormField
                       control={form.control}
-                      name="phone"
+                      name="dob"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Mobile</FormLabel>
+                          <FormLabel>Date Of Birth</FormLabel>
                           <FormControl>
-                            <Input
+                            <DateInput
                               className="w-lg"
-                              {...field}
-                              placeholder="Enter mobile number"
-                              type="tel"
+                              name={field.name}
+                              onChange={field.onChange}
+                              ref={field.ref}
+                              value={field.value}
                             />
                           </FormControl>
                           <FormMessage />
@@ -118,49 +194,16 @@ const page = () => {
                     />
                     <FormField
                       control={form.control}
-                      name="company"
+                      name="address"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Email Address</FormLabel>
+                          <FormLabel>Address</FormLabel>
                           <FormControl>
                             <Input
                               className="w-lg"
                               {...field}
-                              placeholder="Enter email address"
-                              type="email"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="flex items-center justify-around w-full">
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Mobile</FormLabel>
-                          <FormControl>
-                            <DateInput {...field} className="w-lg" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="company"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email Address</FormLabel>
-                          <FormControl>
-                            <Input
-                              className="w-lg"
-                              {...field}
-                              placeholder="Enter email address"
-                              type="email"
+                              placeholder="Enter company name"
+                              type="text"
                             />
                           </FormControl>
                           <FormMessage />
@@ -168,15 +211,7 @@ const page = () => {
                       )}
                     />
                   </div>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-2">
-                <AccordionTrigger className="text-lg font-bold flex items-center justify-start">
-                  <Map />
-                  Address
-                </AccordionTrigger>
-                <AccordionContent className="flex flex-col gap-4 text-balance">
-                  <div className="flex items-center justify-around w-full">
+                  <div className="flex items-center gap-2 justify-around">
                     <FormField
                       control={form.control}
                       name="street"
@@ -185,30 +220,10 @@ const page = () => {
                           <FormLabel>Street</FormLabel>
                           <FormControl>
                             <Input
-                              className="w-full"
-                              {...field}
                               placeholder="Enter street"
-                              type="text"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="flex items-center justify-around w-full">
-                    <FormField
-                      control={form.control}
-                      name="state"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>State</FormLabel>
-                          <FormControl>
-                            <Input
                               className="w-lg"
-                              {...field}
-                              placeholder="Enter mobile number"
                               type="text"
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />
@@ -234,19 +249,19 @@ const page = () => {
                       )}
                     />
                   </div>
-                  <div className="flex items-center justify-around w-full">
+                  <div className="flex items-center gap-2 justify-around">
                     <FormField
                       control={form.control}
-                      name="country"
+                      name="state"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Country</FormLabel>
+                          <FormLabel>State</FormLabel>
                           <FormControl>
                             <Input
                               className="w-lg"
-                              {...field}
-                              placeholder="Enter country"
                               type="text"
+                              {...field}
+                              placeholder="Enter state"
                             />
                           </FormControl>
                           <FormMessage />
@@ -255,15 +270,15 @@ const page = () => {
                     />
                     <FormField
                       control={form.control}
-                      name="pincode"
+                      name="pinCode"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Pincode</FormLabel>
+                          <FormLabel>Pin-code</FormLabel>
                           <FormControl>
                             <Input
                               className="w-lg"
                               {...field}
-                              placeholder="Enter pincode"
+                              placeholder="Enter pin-code"
                               type="number"
                             />
                           </FormControl>
@@ -272,34 +287,19 @@ const page = () => {
                       )}
                     />
                   </div>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-3">
-                <AccordionTrigger>Return Policy</AccordionTrigger>
-                <AccordionContent className="flex flex-col gap-4 text-balance">
-                  <p>
-                    We stand behind our products with a comprehensive 30-day
-                    return policy. If you&apos;re not completely satisfied,
-                    simply return the item in its original condition.
-                  </p>
-                  <p>
-                    Our hassle-free return process includes free return shipping
-                    and full refunds processed within 48 hours of receiving the
-                    returned item.
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
-              <div className="flex items-center justify-end gap-2 mt-2">
-                <Button variant={"default"} type="submit">
-                  Submit
-                </Button>
-                <Button variant={"outline"} type="button">
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </Accordion>
+                </form>
+              </Form>
+            </CardContent>
+            <CardFooter>
+              <Button variant={"default"} type="submit">
+                Submit
+              </Button>
+              <Button variant={"outline"} type="button">
+                Cancel
+              </Button>
+            </CardFooter>
+          </Card>
+        </form>
       </div>
     </>
   );
