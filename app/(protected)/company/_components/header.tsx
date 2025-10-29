@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React, { useState } from "react";
@@ -10,8 +11,10 @@ const Header = () => {
     <div className="flex items-center justify-between">
       <h1 className="text-xl font-semibold">Company List</h1>
       <Input type="search" placeholder="Search company" className="w-lg" />
-      <Button className="cursor-pointer">Add Company</Button>
-      <CompanyForm />
+      <Button className="cursor-pointer" onClick={() => setFormOpen(true)}>
+        Add Company
+      </Button>
+      <CompanyForm open={formOpen} setOpen={setFormOpen} title="Create" />
     </div>
   );
 };

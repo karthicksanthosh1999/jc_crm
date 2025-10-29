@@ -21,41 +21,41 @@ model User {
   location  String
   leads     Lead[]  @relation("SalesManagerLeads")
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   Lead      Lead[]
   Course    Course[]
-  Company   Company[]
 }
 
 model Lead {
-  id              String     @id @default(uuid())
-  userId          String
+  id     String     @id @default(uuid())
+  name   String
+  email  String
+  city   String?
+  userId String?
+  phone  String
+  status LeadStatus @default(NEW)
+
   image           String?
   imagePublicId   String?
-  name            String
-  email           String
   dob             DateTime?
   doj             DateTime?
   doe             DateTime?
-  phone           String
   company         String
-  status          LeadStatus @default(NEW)
   courseId        String
   street          String?
   state           String?
-  city            String?
   pinCode         Int?
   country         String?
   idProof         String?
   idProofPublicId String?
   assignedToId    String?
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  createdUser User   @relation(fields: [userId], references: [id])
-  assignedTo  User?  @relation("SalesManagerLeads", fields: [assignedToId], references: [id])
-  course      Course @relation(fields: [courseId], references: [id])
+  assignedTo User?  @relation("SalesManagerLeads", fields: [assignedToId], references: [id])
+  course     Course @relation(fields: [courseId], references: [id])
+  User       User?  @relation(fields: [userId], references: [id])
 }
 
 model Course {
@@ -76,8 +76,8 @@ model Company {
   id          String @id @default(uuid())
   companyName String
   logo        String
-  userId      String
-  owner       User   @relation(fields: [userId], references: [id])
+  email       String
+  mobile      String
 }
 
 enum Role {

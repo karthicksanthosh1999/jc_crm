@@ -22,6 +22,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import {
+  companyValidationSchema,
+  companyValidationSchemaType,
+} from "@/schema/company_schema";
+import { Input } from "@/components/ui/input";
 
 type props = {
   open: boolean;
@@ -33,12 +38,22 @@ const CompanyForm = ({ open, setOpen, title }: props) => {
   const [preview, setPreview] = useState<string | null>(null);
 
   const form = useForm({
-    resolver: zodResolver(),
+    resolver: zodResolver(companyValidationSchema),
+    defaultValues: {
+      companyName: "",
+      email: "",
+      logo: "",
+      mobile: "",
+    },
   });
 
   const handleClose = () => {
     setOpen(false);
     form.reset();
+  };
+
+  const onSubmit = (value: companyValidationSchemaType) => {
+    console.log(value);
   };
 
   return (
@@ -47,11 +62,11 @@ const CompanyForm = ({ open, setOpen, title }: props) => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center justify-between cursor-pointer">
-              <h1>{title} the User</h1>
+              <h1>{title} the company</h1>
               <X onClick={handleClose} />
             </AlertDialogTitle>
             <Separator />
-            <AlertDialogDescription>Create the Course</AlertDialogDescription>
+            <AlertDialogDescription>Create the Company</AlertDialogDescription>
           </AlertDialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
@@ -71,7 +86,7 @@ const CompanyForm = ({ open, setOpen, title }: props) => {
                   <span className="sr-only">Choose profile photo</span>
                   <FormField
                     control={form.control}
-                    name="image"
+                    name="logo"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
@@ -105,7 +120,7 @@ const CompanyForm = ({ open, setOpen, title }: props) => {
               </div>
               <FormField
                 control={form.control}
-                name="title"
+                name="companyName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Course Title:</FormLabel>
@@ -120,6 +135,40 @@ const CompanyForm = ({ open, setOpen, title }: props) => {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email:</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="Enter the email"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="mobile"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email:</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="tel"
+                        placeholder="Enter the mobile"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <AlertDialogFooter>
                 <Button
                   variant={"destructive"}
@@ -127,8 +176,8 @@ const CompanyForm = ({ open, setOpen, title }: props) => {
                   onClick={handleClose}>
                   Cancel
                 </Button>
-                <Button disabled={isPending} type="submit">
-                  {isPending ? "Creating" : "Create"}
+                <Button type="submit">
+                  {title === "Create" ? "Create" : "Update"}
                 </Button>
               </AlertDialogFooter>
             </form>
